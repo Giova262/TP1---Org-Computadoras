@@ -4,6 +4,21 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <errno.h>
+#include "functions.h"
+
+int IsValidNumber(char * string)
+{
+    int j = 0;
+    for(int i = 0; i < strlen( string ); i ++)
+    {
+        if ( string[i] >= '0' && string[i] <= '9' )
+            j = 1;
+            break;
+    }
+
+   return j;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -46,6 +61,41 @@ int main(int argc, char *argv[])
             fprintf(stderr,
                 "\nCargando Archivo para hashear..\n\n"
             );
+
+            //abro el archivo
+            FILE * fp;
+            char * line = NULL;
+            size_t len = 0;
+            ssize_t read;
+
+            fp = fopen(argv[2], "r");
+            if (fp == NULL)
+                exit(EXIT_FAILURE);
+
+            while ((read = getline(&line, &len, fp)) != -1) {
+
+                //veo si la linea es un numero
+                if (IsValidNumber(line) == 1){
+                    int num = atoi(line);
+                    //llamo la funcion en assembler para que incremente
+                    num = add(num);
+                    printf("%d     ", num);
+                } else {
+                    printf("NO NUMERO   ");
+                }
+
+
+                
+
+
+                printf("%s", line);
+            }
+            printf("\n");
+
+            fclose(fp);
+            if (line)
+                free(line);
+            exit(EXIT_SUCCESS);
             break;
         }
 
