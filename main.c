@@ -4,7 +4,19 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdint.h>
+#include <assert.h>
 #include "functions.h"
+
+#define STRING_HASH_INIT 1
+#define STRING_HASH_MORE 2
+#define STRING_HASH_DONE 3
+
+typedef struct {
+	int8_t flag;
+	int32_t hash;
+	size_t size;
+} string_hash;
 
 int IsValidNumber(char * string)
 {
@@ -19,11 +31,51 @@ int IsValidNumber(char * string)
    return j;
 }
 
+static void string_hash_done(string_hash *sh)
+{
+	assert(sh->flag == STRING_HASH_INIT || sh->flag == STRING_HASH_MORE);
+
+	if ((sh->hash ^= sh->size) == -1)
+		sh->hash = -2;
+
+	sh->flag = STRING_HASH_DONE;
+}
+
+static void string_hash_more(string_hash *sh, char *str, size_t len)
+{
+	assert(sh->flag == STRING_HASH_INIT || sh->flag == STRING_HASH_MORE);
+
+	if (sh->flag == STRING_HASH_INIT) {
+		sh->flag = STRING_HASH_MORE;
+		sh->hash = (*str) << 7;
+	}
+
+	while ((*str) != 0 && len--) {
+		sh->hash = (1000003 * sh->hash) ^ *str++;
+		sh->size++;
+	}
+}
+
+static void string_hash_init(string_hash *h)
+{
+	h->flag = STRING_HASH_INIT;
+	h->hash = 0;
+	h->size = 0;
+}
+
 
 int main(int argc, char *argv[])
 {
     int i;
-    char *docFileName = NULL;
+    string_hash hash;
+    FILE * fp;
+    char * line = NULL;
+    char *ptr;
+    ssize_t read;
+    size_t len = 0;
+    size_t rem;
+    size_t delta;
+    size_t stride;
 
     for (i = 1; i < argc; i++) {
         char* arg=argv[i] ;
@@ -58,15 +110,6 @@ int main(int argc, char *argv[])
         }
 
         if (strcmp(arg, "-i") == 0) {
-            fprintf(stderr,
-                "\nCargando Archivo para hashear..\n\n"
-            );
-
-            //abro el archivo
-            FILE * fp;
-            char * line = NULL;
-            size_t len = 0;
-            ssize_t read;
 
             fp = fopen(argv[2], "r");
             if (fp == NULL)
@@ -74,23 +117,40 @@ int main(int argc, char *argv[])
 
             while ((read = getline(&line, &len, fp)) != -1) {
 
-                //veo si la linea es un numero
-                if (IsValidNumber(line) == 1){
-                    int num = atoi(line);
-                    //llamo la funcion en assembler para que incremente
-                    num = add(num);
-                    printf("%d     ", num);
-                } else {
-                    printf("NO NUMERO   ");
+                 /*
+                   //veo si la linea es un numero
+                   if (IsValidNumber(line) == 1){
+                        int num = atoi(line);
+                        llamo la funcion en assembler para que incremente
+                        num = add(num);
+                         printf("%d     ", num);
+                    } else {
+                        printf("NO NUMERO   ");
+                    }
+                 */
+
+                len = strlen(line);
+
+                for (stride = len; stride >= 1; stride--) {
+                    string_hash_init(&hash);
+                    ptr = line;
+                    rem = len;
+                    while (rem) {
+                        if (rem >= stride)
+                            delta = stride;
+                        else {
+                            delta = rem;
+                        }
+                        string_hash_more(&hash, ptr, delta);
+                        rem -= delta;
+                        ptr += delta;
+                    }
+                    string_hash_done(&hash);
                 }
 
-
-                
-
-
+                printf("0x%04x  ", hash.hash);
                 printf("%s", line);
             }
-            printf("\n");
 
             fclose(fp);
             if (line)
@@ -98,8 +158,6 @@ int main(int argc, char *argv[])
             exit(EXIT_SUCCESS);
             break;
         }
-
-        docFileName = arg;
     }
 
     return 0;
