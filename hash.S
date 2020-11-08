@@ -28,16 +28,84 @@ hashAs:
 	sw	a0, 0(fp) # integer n -> El contenido del registro a0 se almacena en memoria(0+fp)
 
 
-	sw a1, 44(fp)
+	sw a1, 44(fp)  #segundo parametro: msg
 	sw a1, 4(fp)
 
-	sw a2, 48(fp)
+	sw a2, 48(fp)  #tercer parametro: len
 	sw a2, 8(fp)
 
+	lw  t0, 0(fp)
+	sw  t0, 16(fp) #16(fp) -> hash
+
+	lw  t0, 4(fp)
+	sw  t0, 20(fp) #20(fp) -> *str
 
 
 
 
+
+
+    lw t0, 16(fp)   #t0 = direccion del hash
+    lw t1, 0(t0)   #t1 = primer word del hash 
+    srl t1, t1, 24 #t1= hash->flag
+
+    li t0, 1	   #t0=STRING_HASH_INIT
+
+    bne t1, t0, while
+
+ifflag1:
+
+	lw t0, 16(fp)  #t0 = direccion del hash
+	li t1, 2	   #t1= STRING_HASH_MORE
+	sll t1, t1, 24
+	sw t1, 0(t0)   #hash->flag = 2 
+
+
+
+    lw t0, 4(fp) # t0 -> *str
+    lw t1, 0(t0) # t1 -> *str (primeros 4 bytes)
+	sll t1, t1, 7        #t1 = (*str) << 7;
+
+	lw t0, 16(fp)  #t0 = direccion del hash
+	sw t1, 4(t0)   #hash->hash = (*str) << 7;
+
+
+while:
+
+
+    lw t0, 20(fp) # t0 -> str
+    lw t1, 0(t0) # t1 -> *str (primeros 4 bytes)
+
+	li t0, 0
+	beq t1, t0, endwhile # if (*str)==0
+
+	lw t0, 8(fp) # t0 = len
+	beq t0, 0, endwhile
+
+continue:
+	
+
+
+
+	lw t3, 20(fp)  #t3=*str
+    addiu t3,t3,1  #t3=*str+1
+    sw t3, 20(fp)  #str++
+
+
+	lw t0, 16(fp)  #t0 = direccion del hash
+	lw t1, 8(t0)   #t1 = hash->size
+	addiu t1,t1,1  #t1 = hash->size +1
+	sw t1, 8(t0)   #hash->size++
+
+
+	lw t0, 8(fp)   # t0=len
+	subu t0, t0, 1 # t0--
+	sw t0, 8(fp)   # len --
+
+	b while
+
+
+endwhile:
 
 
 
@@ -59,13 +127,6 @@ hashAs:
 
 
 
-
-	lw  t3, 0(fp)
-	sw  t3, 16(fp)
-
-
-	lw  t3, 4(fp)
-	sw  t3, 20(fp)
 
 	sll v0, v0, 7        #sh->hash = (*str) << 7;
 	mul  t0, v0, 1000003 #t0 = 1000003 * sh->hash
@@ -99,11 +160,18 @@ hashAs:
 #    lw t0,8(t3)   #t0= size
 
 
-    lw t3, 20(fp) 
-    lw t4, 0(t3)  #t4 = primeros 4 caracteres de msd
-    addiu t0, t4, 0
+#    lw t3, 20(fp) 
+ #   addiu t3,t3,1      
+ #   sw t3, 20(fp)  #t4 = primeros 4 caracteres de msd
+#    addiu t0, t4, 0
 
-    lw t0, 8(fp)  #t0 = len
+
+ #   lw t3, 20(fp) 
+ #   lw t4, 0(t3)  #t4 = primeros 4 caracteres de msd
+  #  addiu t0, t4, 0
+
+
+#    lw t0, 8(fp)  #t0 = len
 
  #   lw t0,0(t3)  #primeros 4 bytes de msg
 
