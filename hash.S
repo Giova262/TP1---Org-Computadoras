@@ -64,6 +64,7 @@ ifflag1:
 
     lw t0, 4(fp) # t0 -> *str
     lw t1, 0(t0) # t1 -> *str (primeros 4 bytes)
+    srl t1,t1,24 # t1 = primer caracter de str
 	sll t1, t1, 7        #t1 = (*str) << 7;
 
 	lw t0, 16(fp)  #t0 = direccion del hash
@@ -75,6 +76,7 @@ while:
 
     lw t0, 20(fp) # t0 -> str
     lw t1, 0(t0) # t1 -> *str (primeros 4 bytes)
+    srl t1,t1,24 # t1 = primer caracter de str
 
 	li t0, 0
 	beq t1, t0, endwhile # if (*str)==0
@@ -84,6 +86,31 @@ while:
 
 continue:
 	
+
+	lw t0, 16(fp)  #t0 = direccion del hash
+	lw t1, 4(t0)   #t1= sh->hash
+
+	mul  t0, t1, 1000003 #t0 = 1000003 * sh->hash
+
+
+	# a0 = base  y a1 = e  ->  base*e
+
+	addiu a0, t0, 0 #a0 = 1000003 * sh->hash
+
+	lw t1, 20(fp)  #t1 = str
+	lw t2, 0(t1)   #t2 = *str
+	srl a1, t2, 24 #a1 = primer caracter de str
+
+
+    la t9, potencia  #llamo a potencia
+    jal ra, t9
+
+    #v0 = (1000003 * sh->hash) ^ *str
+
+    b fin
+
+	lw t0, 16(fp)  #t0 = direccion del hash
+	sw v0, 4(t0)   #sh->hash = (1000003 * sh->hash) ^ *str
 
 
 
@@ -102,6 +129,8 @@ continue:
 	subu t0, t0, 1 # t0--
 	sw t0, 8(fp)   # len --
 
+
+
 	b while
 
 
@@ -110,51 +139,15 @@ endwhile:
 
 
 
-#	addiu v0, a1, 0
-#	lw v0, 4(a1)
-
-#	b fin
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	sll v0, v0, 7        #sh->hash = (*str) << 7;
-	mul  t0, v0, 1000003 #t0 = 1000003 * sh->hash
-
-	addiu t1, a1, 1     #t1 = *str++
-
-	# t0 = base  y t1 = e  ->  base*e
-	addiu  a0, t0, 0
-	addiu  a1, t1, 0
-
-
-
-	li  a0, 5
-	li  a1, 3
-
-    la t9, potencia
-    jal ra, t9
-
-
 
 ###############################################
 
 
 
-    lw t3, 16(fp)
+#    lw t3, 16(fp)
 
-    lw t0,0(t3)   
-    srl t0, t0, 24#t0= flag
+#    lw t0,0(t3)   
+#    srl t0, t0, 24#t0= flag
 
 #    lw t0,4(t3)   #t0= hash
 #    lw t0,8(t3)   #t0= size
@@ -178,7 +171,7 @@ endwhile:
 
 
 
-    addiu v0, t0, 0
+    #addiu v0, t0, 0
 
     #v0 = (1000003 * sh->hash) ^ *str++
 

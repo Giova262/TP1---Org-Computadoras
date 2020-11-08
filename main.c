@@ -45,11 +45,14 @@ static void string_hash_more(string_hash *sh, char *str, size_t len)
 	if (sh->flag == STRING_HASH_INIT) {
 		sh->flag = STRING_HASH_MORE;
 		sh->hash = (*str) << 7;
+
 	}
     // printf("%d\n",*str);
     /*printf("%d\n",len);*/
 	while ((*str) != 0 && len--) {
-		sh->hash = (1000003 * sh->hash) ^ *str++;
+		sh->hash = (1000003 * sh->hash) ^ *str;
+        printf("hash: 0x%04x\n  ", sh->hash);
+        *str++;
 		sh->size++;
 	}
 }
@@ -115,13 +118,12 @@ int main(int argc, char *argv[])
             // num = hashAs(*msg,len);
             // num = hashAs(109,len);
             string_hash_init(&hash);
-            num = hashAs(&hash, msg, len);
-            //hashAs(&hash, msg, len);
+            hashAs(&hash, msg, len);
             string_hash_done(&hash);
             // printf("hash 1: %d\n\n", num);
-            printf("hash 1: 0x%04x\n\n  ", num);
+            printf("hash 1: 0x%04x  ", hash.hash);
 
-            printf("msg: 0x%04x\n\n  ", *msg);
+            printf("msg: 0x%04x\n\n", *msg);
             // printf("hash 2: 0x%04x  ", num);
 
             
