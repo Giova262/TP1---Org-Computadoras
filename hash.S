@@ -7,10 +7,10 @@
 	.align 2		# alineacion 2^2
 
 
-	.globl	hashAs2
-	.ent	hashAs2
+	.globl	hashAs
+	.ent	hashAs
 
-hashAs2:
+hashAs:
 	.frame fp, 40, ra
 	.set	noreorder	# apaga reordenamiento de instrucciones
 	.cpload t9		# directiva usada para codigo PIC
@@ -37,9 +37,9 @@ hashAs2:
 	#addiu  a1, t3, 0
 
 	li  a0, 5
-	li  a1, 2
+	li  a1, 3
 
-    la t9, factorial
+    la t9, potencia
     jal ra, t9
 
 	# restauro callee-saved regs
@@ -51,5 +51,5 @@ hashAs2:
 	# vuelvo a funcion llamante
 	jr	ra
 
-	.end	hashAs2
-	.size	hashAs2,.-hashAs2
+	.end	hashAs
+	.size	hashAs,.-hashAs

@@ -7,10 +7,8 @@ typedef struct {
 	size_t size;
 } string_hash;
 
-int add(int);
 int32_t hashAs(int32_t,int32_t);
-int32_t hashAs2(int32_t,int32_t);
-unsigned int  factorial (unsigned int n, int);
+unsigned int  potencia (unsigned int n, int);
 // void hashAs(string_hash *sh, char *str, size_t len);
 
 #endif

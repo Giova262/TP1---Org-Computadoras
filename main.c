@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
             int num;
             // num = hashAs(*msg,len);
             // num = hashAs(109,len);
-            num = hashAs2(109,len);
+            num = hashAs(109,len);
             printf("hash 1: %d\n\n", num);
             printf("hash 2: 0x%04x  ", num);
 
