@@ -27,20 +27,106 @@ hashAs:
 	sw	a0, 40(fp)	# n: a0, sp+40 -> El contenido del registro a0 se almacena en memoria(40+fp)
 	sw	a0, 0(fp) # integer n -> El contenido del registro a0 se almacena en memoria(0+fp)
 
-	lw  t3, 0(fp)
-	lw  v0, 0(fp)
-	sll v0, v0, 7
-	mul  v0, v0, 1000003
 
-	# t1 = x  y t0 = n  ->  x*n
-	#addiu  a0, v0, 0
-	#addiu  a1, t3, 0
+	sw a1, 44(fp)
+	sw a1, 4(fp)
+
+	sw a2, 48(fp)
+	sw a2, 8(fp)
+
+
+
+
+
+
+
+
+
+#	addiu v0, a1, 0
+#	lw v0, 4(a1)
+
+#	b fin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	lw  t3, 0(fp)
+	sw  t3, 16(fp)
+
+
+	lw  t3, 4(fp)
+	sw  t3, 20(fp)
+
+	sll v0, v0, 7        #sh->hash = (*str) << 7;
+	mul  t0, v0, 1000003 #t0 = 1000003 * sh->hash
+
+	addiu t1, a1, 1     #t1 = *str++
+
+	# t0 = base  y t1 = e  ->  base*e
+	addiu  a0, t0, 0
+	addiu  a1, t1, 0
+
+
 
 	li  a0, 5
 	li  a1, 3
 
     la t9, potencia
     jal ra, t9
+
+
+
+###############################################
+
+
+
+    lw t3, 16(fp)
+
+    lw t0,0(t3)   
+    srl t0, t0, 24#t0= flag
+
+#    lw t0,4(t3)   #t0= hash
+#    lw t0,8(t3)   #t0= size
+
+
+    lw t3, 20(fp) 
+    lw t4, 0(t3)  #t4 = primeros 4 caracteres de msd
+    addiu t0, t4, 0
+
+    lw t0, 8(fp)  #t0 = len
+
+ #   lw t0,0(t3)  #primeros 4 bytes de msg
+
+
+
+
+    addiu v0, t0, 0
+
+    #v0 = (1000003 * sh->hash) ^ *str++
+
+
+############################################
+
+
+
+
+
+
+
+
+
+
+fin:
 
 	# restauro callee-saved regs
 	lw	gp, 24(sp)

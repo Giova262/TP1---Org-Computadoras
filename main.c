@@ -114,16 +114,22 @@ int main(int argc, char *argv[])
             int num;
             // num = hashAs(*msg,len);
             // num = hashAs(109,len);
-            num = hashAs(109,len);
-            printf("hash 1: %d\n\n", num);
-            printf("hash 2: 0x%04x  ", num);
+            string_hash_init(&hash);
+            num = hashAs(&hash, msg, len);
+            //hashAs(&hash, msg, len);
+            string_hash_done(&hash);
+            // printf("hash 1: %d\n\n", num);
+            printf("hash 1: 0x%04x\n\n  ", num);
+
+            printf("msg: 0x%04x\n\n  ", *msg);
+            // printf("hash 2: 0x%04x  ", num);
 
             
 
             string_hash_init(&hash);
             string_hash_more(&hash, msg, len);
             string_hash_done(&hash);
-            printf("0x%04x  ", hash.hash);
+            printf("hash 2: 0x%04x  ", hash.hash);
             printf("%s\n\n", msg);
 
             break;
