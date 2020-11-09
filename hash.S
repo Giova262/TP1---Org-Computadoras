@@ -116,12 +116,10 @@ continue:
     addiu t3,t3,1  #t3=*str+1
     sw t3, 20(fp)  #str++
 
-
 	lw t0, 16(fp)  #t0 = direccion del hash
 	lw t1, 8(t0)   #t1 = hash->size
 	addiu t1,t1,1  #t1 = hash->size +1
 	sw t1, 8(t0)   #hash->size++
-
 
 	lw t0, 8(fp)   # t0=len
 	subu t0, t0, 1 # t0--
