@@ -109,12 +109,8 @@ continue:
 
     #v0 = (1000003 * sh->hash) ^ *str
 
-
-
 	lw t1, 16(fp)  #t0 = direccion del hash
 	sw t0, 4(t1)   #sh->hash = (1000003 * sh->hash) ^ *str
-
-
 
 	lw t3, 20(fp)  #t3=*str
     addiu t3,t3,1  #t3=*str+1
