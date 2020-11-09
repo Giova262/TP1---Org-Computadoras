@@ -49,8 +49,7 @@ static void string_hash_more(string_hash *sh, char *str, size_t len)
     // printf("%d\n",*str);
     /*printf("%d\n",len);*/
 	while ((*str) != 0 && len--) {
-		sh->hash = (1000003 * sh->hash) ^ *str;
-        *str++;
+		sh->hash = (1000003 * sh->hash) ^ *str++;
 		sh->size++;
 	}
 }
@@ -69,12 +68,8 @@ int main(int argc, char *argv[])
     string_hash hash;
     FILE * fp;
     char * line = NULL;
-    char *ptr;
     ssize_t read;
     size_t len = 0;
-    size_t rem;
-    size_t delta;
-    size_t stride;
 
     for (i = 1; i < argc; i++) {
         char* arg=argv[i] ;
@@ -112,19 +107,10 @@ int main(int argc, char *argv[])
             printf( "\nTesteando codigo aseembly. \n\n"  );
             char *msg = "mensaje para string hash";
             len = strlen("mensaje para string hash");
-            int num;
-            // num = hashAs(*msg,len);
-            // num = hashAs(109,len);
             string_hash_init(&hash);
-            num = hashAs(&hash, msg, len);
+            hashAs(&hash, msg, len);
             string_hash_done(&hash);
-            printf("return V0 hexa: 0x%04x\n", num);
-            printf("return V0 decimal: %d\n\n", num);
-            printf("hash 1 hexa: 0x%04x\n", hash.hash);
-            printf("hash 1 decimal: %d\n\n", hash.hash);
-
-            // printf("msg: 0x%04x\n\n", *msg);
-            // printf("hash 2: 0x%04x  ", num);
+            printf("hash 1: 0x%04x\n", hash.hash);
 
             string_hash_init(&hash);
             string_hash_more(&hash, msg, len);
@@ -137,46 +123,24 @@ int main(int argc, char *argv[])
 
         if (strcmp(arg, "-i") == 0) {
 
+            printf("\n");
             fp = fopen(argv[2], "r");
             if (fp == NULL)
                 exit(EXIT_FAILURE);
 
             while ((read = getline(&line, &len, fp)) != -1) {
 
-                 /*
-                   //veo si la linea es un numero
-                   if (IsValidNumber(line) == 1){
-                        int num = atoi(line);
-                        llamo la funcion en assembler para que incremente
-                        num = add(num);
-                         printf("%d     ", num);
-                    } else {
-                        printf("NO NUMERO   ");
-                    }
-                 */
-
                 len = strlen(line);
 
-                for (stride = len; stride >= 1; stride--) {
-                    string_hash_init(&hash);
-                    ptr = line;
-                    rem = len;
-                    while (rem) {
-                        if (rem >= stride)
-                            delta = stride;
-                        else {
-                            delta = rem;
-                        }
-                        string_hash_more(&hash, ptr, delta);
-                        rem -= delta;
-                        ptr += delta;
-                    }
-                    string_hash_done(&hash);
-                }
+                string_hash_init(&hash);
+                hashAs(&hash, line, len);
+                string_hash_done(&hash);
+                printf("hash: 0x%04x ", hash.hash);
 
-                printf("0x%04x  ", hash.hash);
                 printf("%s", line);
             }
+
+            printf("\n");
 
             fclose(fp);
             if (line)
