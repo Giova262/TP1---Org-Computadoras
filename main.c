@@ -51,7 +51,11 @@ static void string_hash_more(string_hash *sh, char *str, size_t len)
     /*printf("%d\n",len);*/
 	while ((*str) != 0 && len--) {
 		sh->hash = (1000003 * sh->hash) ^ *str;
-        printf("hash: 0x%04x\n  ", sh->hash);
+        printf("C hash Hexa: 0x%04x\n  ", sh->hash);
+        printf("C hash Decimal: %dx\n  ", sh->hash);
+        printf("C multiplixacion Hexa: 0x%04x\n", (1000003 * sh->hash));
+        printf("C multiplixacion Decimal: %d\n", (1000003 * sh->hash));
+        break;
         *str++;
 		sh->size++;
 	}
@@ -118,15 +122,15 @@ int main(int argc, char *argv[])
             // num = hashAs(*msg,len);
             // num = hashAs(109,len);
             string_hash_init(&hash);
-            hashAs(&hash, msg, len);
+            num = hashAs(&hash, msg, len);
             string_hash_done(&hash);
-            // printf("hash 1: %d\n\n", num);
-            printf("hash 1: 0x%04x  ", hash.hash);
+            printf("return V0 hexa: 0x%04x\n", num);
+            printf("return V0 decimal: %d\n\n", num);
+            printf("hash 1 hexa: 0x%04x\n", hash.hash);
+            printf("hash 1 decimal: %d\n\n", hash.hash);
 
-            printf("msg: 0x%04x\n\n", *msg);
+            // printf("msg: 0x%04x\n\n", *msg);
             // printf("hash 2: 0x%04x  ", num);
-
-            
 
             string_hash_init(&hash);
             string_hash_more(&hash, msg, len);

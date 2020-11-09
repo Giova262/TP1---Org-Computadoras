@@ -65,12 +65,17 @@ ifflag1:
     lw t0, 4(fp) # t0 -> *str
     lw t1, 0(t0) # t1 -> *str (primeros 4 bytes)
     srl t1,t1,24 # t1 = primer caracter de str
+
 	sll t1, t1, 7        #t1 = (*str) << 7;
+
+	addiu v0, t0, 0
+	#lw v0,4(t0) 
+    b fin
 
 	lw t0, 16(fp)  #t0 = direccion del hash
 	sw t1, 4(t0)   #hash->hash = (*str) << 7;
 
-
+	
 while:
 
 
@@ -90,9 +95,13 @@ continue:
 	lw t0, 16(fp)  #t0 = direccion del hash
 	lw t1, 4(t0)   #t1= sh->hash
 
+	
+
+	#srl t1,t1,24 # t1 = primer caracter de str
+
 	mul  t0, t1, 1000003 #t0 = 1000003 * sh->hash
 
-
+	
 	# a0 = base  y a1 = e  ->  base*e
 
 	addiu a0, t0, 0 #a0 = 1000003 * sh->hash
@@ -106,8 +115,6 @@ continue:
     jal ra, t9
 
     #v0 = (1000003 * sh->hash) ^ *str
-
-    b fin
 
 	lw t0, 16(fp)  #t0 = direccion del hash
 	sw v0, 4(t0)   #sh->hash = (1000003 * sh->hash) ^ *str
