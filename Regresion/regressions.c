@@ -24,7 +24,8 @@ get_hash_(string_hash *sh, char *msg, size_t len, size_t stride)
 		else
 			delta = rem;
 	
-		string_hash_more(sh, ptr, delta);
+		// string_hash_more(sh, ptr, delta); // Hash de C
+		hashAs(sh, ptr, delta); // Hash de Assembly MIPS
 		rem -= delta;
 		ptr += delta;
 	}
