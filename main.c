@@ -13,20 +13,6 @@
 #define STRING_HASH_DONE 3
 
 
-int IsValidNumber(char * string)
-{
-    int j = 0;
-    for(int i = 0; i < strlen( string ); i ++)
-    {
-        if ( string[i] >= '0' && string[i] <= '9' ){
-	    j = 1;
-            break;
-	}
-            
-    }
-
-   return j;
-}
 
 static void string_hash_done(string_hash *sh)
 {
@@ -53,15 +39,12 @@ static void string_hash_more(string_hash *sh, char *str, size_t len)
 	}
 }
 
-
-
 static void string_hash_init(string_hash *h)
 {
 	h->flag = STRING_HASH_INIT;
 	h->hash = 0;
 	h->size = 0;
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -130,23 +113,19 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
 
             while ((read = getline(&line, &len, fp)) != -1) {
-
                 len = strlen(line);
 
                 string_hash_init(&hash);
                 hashAs(&hash, line, len);
                 string_hash_done(&hash);
-                printf("hash A: 0x%04x ", hash.hash);
+                printf("A hash: 0x%04x mensaje: %s", hash.hash, line);
 
                 string_hash_init(&hash);
                 string_hash_more(&hash, line, len);
                 string_hash_done(&hash);
-                printf("hash C: 0x%04x ", hash.hash);
+                printf("C hash: 0x%04x mensaje: %s\n", hash.hash, line);
 
-                printf("%s", line);
             }
-
-            printf("\n");
 
             fclose(fp);
             if (line)

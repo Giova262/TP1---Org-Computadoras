@@ -40,11 +40,6 @@ hashAs:
 	lw  t0, 4(fp)
 	sw  t0, 20(fp) #20(fp) -> *str
 
-
-
-
-
-
     lw t0, 16(fp)   #t0 = direccion del hash
     lw t1, 0(t0)   #t1 = primer word del hash 
     srl t1, t1, 24 #t1= hash->flag
