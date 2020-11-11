@@ -118,13 +118,7 @@ int main(int argc, char *argv[])
                 string_hash_init(&hash);
                 hashAs(&hash, line, len);
                 string_hash_done(&hash);
-                printf("A hash: 0x%04x mensaje: %s", hash.hash, line);
-
-                string_hash_init(&hash);
-                string_hash_more(&hash, line, len);
-                string_hash_done(&hash);
-                printf("C hash: 0x%04x mensaje: %s\n", hash.hash, line);
-
+                printf("0x%04x %s", hash.hash, line);
             }
 
             fclose(fp);
