@@ -51,9 +51,11 @@ int main(int argc, char *argv[])
     int i;
     string_hash hash;
     FILE * fp;
+    FILE * output;
     char * line = NULL;
     ssize_t read;
     size_t len = 0;
+    
 
     for (i = 1; i < argc; i++) {
         char* arg=argv[i] ;
@@ -108,17 +110,46 @@ int main(int argc, char *argv[])
         if (strcmp(arg, "-i") == 0) {
 
             printf("\n");
+            if ( argc <= 2 ) {
+                printf("Falta definir algun argumento\n");
+                return 0;
+            }
+            
             fp = fopen(argv[2], "r");
-            if (fp == NULL)
-                exit(EXIT_FAILURE);
+            
 
-            while ((read = getline(&line, &len, fp)) != -1) {
-                len = strlen(line);
+            if ( argc == 5 ) {
+                char* codigo=argv[3] ;
+                char* nombreSalida=argv[4] ;
+                if (strcmp(codigo, "-o") == 0) {
 
-                string_hash_init(&hash);
-                hashAs(&hash, line, len);
-                string_hash_done(&hash);
-                printf("0x%04x %s", hash.hash, line);
+                    output = fopen(nombreSalida,"w");
+                    if (output == NULL)  exit(EXIT_FAILURE);
+
+                    while ((read = getline(&line, &len, fp)) != -1) {
+                        len = strlen(line);
+
+                        string_hash_init(&hash);
+                        hashAs(&hash, line, len);
+                        string_hash_done(&hash);
+                        if (strcmp(nombreSalida, "-") == 0) {
+                            printf("0x%04x %s", hash.hash, line);
+                        }else{
+                            fprintf(output,"0x%04x %s", hash.hash, line);
+                        }
+
+
+                    }
+                    
+                    fclose(output);
+
+                } else {
+                    fprintf(stderr, "No se reconoce el comando %s\n",codigo);
+                }
+        
+            } else {
+
+                 printf("Falta definir el -o salida.txt por ejemplo\n");
             }
 
             fclose(fp);
