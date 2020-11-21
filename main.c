@@ -8,7 +8,7 @@
 #include <assert.h>
 #include "functions.h"
 
-#define STRING_HASH_INIT 1
+#define STRING_HASH_INIT 3
 #define STRING_HASH_MORE 2
 #define STRING_HASH_DONE 3
 
@@ -26,7 +26,7 @@ static void string_hash_done(string_hash *sh)
 
 static void string_hash_more(string_hash *sh, char *str, size_t len)
 {
-	// assert(sh->flag == STRING_HASH_INIT || sh->flag == STRING_HASH_MORE);
+	assert(sh->flag == STRING_HASH_INIT || sh->flag == STRING_HASH_MORE);
 
 	if (sh->flag == STRING_HASH_INIT) {
 		sh->flag = STRING_HASH_MORE;
@@ -51,9 +51,11 @@ int main(int argc, char *argv[])
     int i;
     string_hash hash;
     FILE * fp;
+    FILE * output;
     char * line = NULL;
     ssize_t read;
     size_t len = 0;
+    
 
     for (i = 1; i < argc; i++) {
         char* arg=argv[i] ;
@@ -108,23 +110,52 @@ int main(int argc, char *argv[])
         if (strcmp(arg, "-i") == 0) {
 
             printf("\n");
+            if ( argc <= 2 ) {
+                printf("Falta definir algun argumento\n");
+                return -1;
+            }
+            
             fp = fopen(argv[2], "r");
-            if (fp == NULL)
-                exit(EXIT_FAILURE);
+            if ( fp ===  NULL ) {
+                printf("No pudo abrir el archivo\n");
+                return -1;
+            }
+            
+            if ( argc == 5 ) {
+                char* codigo=argv[3] ;
+                char* nombreSalida=argv[4] ;
+                if (strcmp(codigo, "-o") == 0) {
 
-            while ((read = getline(&line, &len, fp)) != -1) {
-                len = strlen(line);
+                    output = fopen(nombreSalida,"w");
+                    if (output == NULL) {
+                        printf("Error al crear el archivo de salida\n");
+                        return -1;
+                    }  
 
-                string_hash_init(&hash);
-                hashAs(&hash, line, len);
-                string_hash_done(&hash);
-                printf("A hash: 0x%04x mensaje: %s", hash.hash, line);
+                    while ((read = getline(&line, &len, fp)) != -1) {
+                        len = strlen(line);
 
-                string_hash_init(&hash);
-                string_hash_more(&hash, line, len);
-                string_hash_done(&hash);
-                printf("C hash: 0x%04x mensaje: %s\n", hash.hash, line);
+                        string_hash_init(&hash);
+                        hashAs(&hash, line, len);
+                        string_hash_done(&hash);
+                        if (strcmp(nombreSalida, "-") == 0) {
+                            printf("0x%04x %s", hash.hash, line);
+                        }else{
+                            fprintf(output,"0x%04x %s", hash.hash, line);
+                        }
 
+
+                    }
+                    
+                    fclose(output);
+
+                } else {
+                    fprintf(stderr, "No se reconoce el comando %s\n",codigo);
+                }
+        
+            } else {
+
+                 printf("Falta definir el -o salida.txt por ejemplo\n");
             }
 
             fclose(fp);
