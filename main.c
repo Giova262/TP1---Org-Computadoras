@@ -23,21 +23,6 @@ static void string_hash_done(string_hash *sh)
 
 	sh->flag = STRING_HASH_DONE;
 }
-/*
-static void string_hash_more(string_hash *sh, char *str, size_t len)
-{
-	assert(sh->flag == STRING_HASH_INIT || sh->flag == STRING_HASH_MORE);
-
-	if (sh->flag == STRING_HASH_INIT) {
-		sh->flag = STRING_HASH_MORE;
-		sh->hash = (*str) << 7;
-	}
-
-	while ((*str) != 0 && len--) {
-		sh->hash = (1000003 * sh->hash) ^ *str++;
-		sh->size++;
-	}
-}*/
 
 static void string_hash_init(string_hash *h)
 {
@@ -61,7 +46,7 @@ int main(int argc, char *argv[])
         char* arg=argv[i] ;
 
         if (strcmp(arg, "-h") == 0) {
-            fprintf(stderr,
+            printf(
                 "\nUsage:\n"
                     "\t tp1 -h \n"
                     "\t tp1 -V \n"
@@ -79,7 +64,7 @@ int main(int argc, char *argv[])
         }
 
         if (strcmp(arg, "-V") == 0) {
-            fprintf(stderr,
+            printf(
                 "\nTrabajo Practico nro 1 - Organizacion de Computadoras. \n\n"
                 "Integrantes:\n"
                 "\t Micaela Villordo 103828\n"
@@ -97,13 +82,6 @@ int main(int argc, char *argv[])
             string_hash_more(&hash, msg, len);
             string_hash_done(&hash);
             printf("hash 1: 0x%04x\n", hash.hash);
-
-           /*string_hash_init(&hash);
-            string_hash_more(&hash, msg, len);
-            string_hash_done(&hash);
-            printf("hash 2: 0x%04x  ", hash.hash);
-            printf("%s\n\n", msg);*/
-
             break;
         }
 
@@ -130,27 +108,25 @@ int main(int argc, char *argv[])
                     if (output == NULL) {
                         printf("Error al crear el archivo de salida\n");
                         return -1;
-                    }  
+                    }
 
                     while ((read = getline(&line, &len, fp)) != -1) {
                         len = strlen(line);
-
                         string_hash_init(&hash);
                         string_hash_more(&hash, line, len);
                         string_hash_done(&hash);
                         if (strcmp(nombreSalida, "-") == 0) {
                             printf("0x%04x %s", hash.hash, line);
                         }else{
-                            fprintf(output,"0x%04x %s", hash.hash, line);
+                            if (fprintf(output,"0x%04x %s", hash.hash, line) < 0){
+                                printf("Error al escribir en archivo de salida.");
+                            }
                         }
-
-
                     }
-                    
                     fclose(output);
 
                 } else {
-                    fprintf(stderr, "No se reconoce el comando %s\n",codigo);
+                    printf("No se reconoce el comando %s\n",codigo);
                 }
         
             } else {
