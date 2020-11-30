@@ -2,8 +2,8 @@
 #include <sys/syscall.h>
 
 		.data
-		mensaje: .asciiz "Ocurrio un error\n"
-		longitud: .word 18
+		mensaje: .asciiz "Assert failed\n"
+		longitud: .word 15
 
         .text                   # segmento de texto del programa
 
