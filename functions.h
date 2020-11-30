@@ -7,9 +7,6 @@ typedef struct {
 	size_t size;
 } string_hash;
 
-int32_t hashAs(string_hash *, char *, size_t);
-// unsigned int  potencia (unsigned int n, int);
-// int32_t hashTest(char *);
-// void hashAs(string_hash *sh, char *str, size_t len);
+int32_t string_hash_more(string_hash *, char *, size_t);
 
 #endif

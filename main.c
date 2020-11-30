@@ -8,7 +8,7 @@
 #include <assert.h>
 #include "functions.h"
 
-#define STRING_HASH_INIT 3
+#define STRING_HASH_INIT 1
 #define STRING_HASH_MORE 2
 #define STRING_HASH_DONE 3
 
@@ -23,7 +23,7 @@ static void string_hash_done(string_hash *sh)
 
 	sh->flag = STRING_HASH_DONE;
 }
-
+/*
 static void string_hash_more(string_hash *sh, char *str, size_t len)
 {
 	assert(sh->flag == STRING_HASH_INIT || sh->flag == STRING_HASH_MORE);
@@ -37,7 +37,7 @@ static void string_hash_more(string_hash *sh, char *str, size_t len)
 		sh->hash = (1000003 * sh->hash) ^ *str++;
 		sh->size++;
 	}
-}
+}*/
 
 static void string_hash_init(string_hash *h)
 {
@@ -94,15 +94,15 @@ int main(int argc, char *argv[])
             char *msg = "mensaje para string hash";
             len = strlen("mensaje para string hash");
             string_hash_init(&hash);
-            hashAs(&hash, msg, len);
+            string_hash_more(&hash, msg, len);
             string_hash_done(&hash);
             printf("hash 1: 0x%04x\n", hash.hash);
 
-            string_hash_init(&hash);
+           /*string_hash_init(&hash);
             string_hash_more(&hash, msg, len);
             string_hash_done(&hash);
             printf("hash 2: 0x%04x  ", hash.hash);
-            printf("%s\n\n", msg);
+            printf("%s\n\n", msg);*/
 
             break;
         }
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
             }
             
             fp = fopen(argv[2], "r");
-            if ( fp ===  NULL ) {
+            if ( fp ==  NULL ) {
                 printf("No pudo abrir el archivo\n");
                 return -1;
             }
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
                         len = strlen(line);
 
                         string_hash_init(&hash);
-                        hashAs(&hash, line, len);
+                        string_hash_more(&hash, line, len);
                         string_hash_done(&hash);
                         if (strcmp(nombreSalida, "-") == 0) {
                             printf("0x%04x %s", hash.hash, line);

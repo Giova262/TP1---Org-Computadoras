@@ -10,10 +10,10 @@
         .abicalls
         .align 2                # alineacion 2^2
 
-        .globl  hashAs
-        .ent    hashAs
+        .globl  string_hash_more
+        .ent    string_hash_more
 
-hashAs:
+string_hash_more:
         .frame fp, 16, ra
 
         # creo stack frame
@@ -118,5 +118,5 @@ endwhile:
         # vuelvo a funcion llamante
         jr      ra
 
-        .end    hashAs
-        .size   hashAs,.-hashAs
+        .end    string_hash_more
+        .size   string_hash_more,.-string_hash_more
