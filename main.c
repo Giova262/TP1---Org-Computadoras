@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
                     "\t tp1 -h \n"
                     "\t tp1 -V \n"
                     "\t tp1 -i in_file -o out_file \n"
-                "Options:"
+                "Options:\n"
                     "\t -V, --version Print version and quit.\n "
                     "\t -h, --help Print this information and quit.\n "
                     "\t -i, --input Specify input stream/file, \"-\" for stdin. \n"
