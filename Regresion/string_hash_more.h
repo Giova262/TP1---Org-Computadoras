@@ -16,7 +16,7 @@ typedef struct {
 
 
 
-int32_t string_hash_more(string_hash *, char *, size_t);
+extern void string_hash_more(string_hash *, char *, size_t);
 extern void string_hash_init(string_hash *);
 extern void string_hash_done(string_hash *);
 extern int32_t string_hash_value(string_hash *);

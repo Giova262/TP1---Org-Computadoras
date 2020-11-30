@@ -7,6 +7,6 @@ typedef struct {
 	size_t size;
 } string_hash;
 
-int32_t string_hash_more(string_hash *, char *, size_t);
+static void string_hash_more(string_hash *, char *, size_t);
 
 #endif

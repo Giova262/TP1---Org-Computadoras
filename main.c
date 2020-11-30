@@ -123,6 +123,7 @@ int main(int argc, char *argv[])
                             }
                         }
                     }
+                    if ( strcmp(strerror(errno),"Success") != 0 ) printf("Error al leer la linea.");
                     fclose(output);
 
                 } else {
