@@ -138,7 +138,7 @@ $LC3:
 	.ascii	"eam/file, \"-\" for stdin. \012\011 -o, --output Specify"
 	.ascii	" output stream/file, \"-\" for stdout. \012Examples:\012"
 	.ascii	" \011 tp1 < in.txt > out.txt\012\011 cat in.txt | tp1 -i"
-	.ascii	" - > out.txt\012\012\000"
+	.ascii	" - > out.txt\012\000"
 	.align	2
 $LC4:
 	.ascii	"-V\000"
@@ -147,7 +147,7 @@ $LC5:
 	.ascii	"\012Trabajo Practico nro 1 - Organizacion de Computadora"
 	.ascii	"s. \012\012Integrantes:\012\011 Micaela Villordo 103828\012"
 	.ascii	"\011 Martin Charytoniuk 96354\012\011 Josue Giovanni Val"
-	.ascii	"divia 93075\012\012\000"
+	.ascii	"divia 93075\012\000"
 	.align	2
 $LC6:
 	.ascii	"-test\000"
@@ -189,9 +189,18 @@ $LC18:
 	.ascii	"0x%04x %s\000"
 	.align	2
 $LC19:
-	.ascii	"No se reconoce el comando %s\012\000"
+	.ascii	"Error al escribir en archivo de salida.\000"
 	.align	2
 $LC20:
+	.ascii	"Success\000"
+	.align	2
+$LC21:
+	.ascii	"Error al leer la linea.\000"
+	.align	2
+$LC22:
+	.ascii	"No se reconoce el comando %s\012\000"
+	.align	2
+$LC23:
 	.ascii	"Falta definir el -o salida.txt por ejemplo\000"
 	.text
 	.align	2
@@ -221,7 +230,7 @@ main:
 	b	$L6
 	nop
 
-$L24:
+$L25:
 	lw	$2,24($fp)
 	sll	$2,$2,2
 	lw	$3,92($fp)
@@ -241,16 +250,11 @@ $L24:
 	bne	$2,$0,$L7
 	nop
 
-	lw	$2,%got(stderr)($28)
-	lw	$2,0($2)
-	move	$7,$2
-	li	$6,342			# 0x156
-	li	$5,1			# 0x1
 	lw	$2,%got($LC3)($28)
 	addiu	$4,$2,%lo($LC3)
-	lw	$2,%call16(fwrite)($28)
+	lw	$2,%call16(puts)($28)
 	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,fwrite
+	.reloc	1f,R_MIPS_JALR,puts
 1:	jalr	$25
 	nop
 
@@ -272,16 +276,11 @@ $L7:
 	bne	$2,$0,$L9
 	nop
 
-	lw	$2,%got(stderr)($28)
-	lw	$2,0($2)
-	move	$7,$2
-	li	$6,157			# 0x9d
-	li	$5,1			# 0x1
 	lw	$2,%got($LC5)($28)
 	addiu	$4,$2,%lo($LC5)
-	lw	$2,%call16(fwrite)($28)
+	lw	$2,%call16(puts)($28)
 	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,fwrite
+	.reloc	1f,R_MIPS_JALR,puts
 1:	jalr	$25
 	nop
 
@@ -400,7 +399,7 @@ $L10:
 
 	lw	$28,16($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	b	$L25
+	b	$L26
 	nop
 
 $L12:
@@ -432,7 +431,7 @@ $L12:
 
 	lw	$28,16($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	b	$L25
+	b	$L26
 	nop
 
 $L14:
@@ -485,7 +484,7 @@ $L14:
 
 	lw	$28,16($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	b	$L25
+	b	$L26
 	nop
 
 $L20:
@@ -576,6 +575,18 @@ $L19:
 	nop
 
 	lw	$28,16($fp)
+	bgez	$2,$L18
+	nop
+
+	lw	$2,%got($LC19)($28)
+	addiu	$4,$2,%lo($LC19)
+	lw	$2,%call16(printf)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,printf
+1:	jalr	$25
+	nop
+
+	lw	$28,16($fp)
 $L18:
 	addiu	$3,$fp,72
 	addiu	$2,$fp,68
@@ -595,6 +606,46 @@ $L18:
 	bne	$3,$2,$L20
 	nop
 
+	lw	$2,%call16(__errno_location)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,__errno_location
+1:	jalr	$25
+	nop
+
+	lw	$28,16($fp)
+	lw	$2,0($2)
+	move	$4,$2
+	lw	$2,%call16(strerror)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,strerror
+1:	jalr	$25
+	nop
+
+	lw	$28,16($fp)
+	move	$3,$2
+	lw	$2,%got($LC20)($28)
+	addiu	$5,$2,%lo($LC20)
+	move	$4,$3
+	lw	$2,%call16(strcmp)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,strcmp
+1:	jalr	$25
+	nop
+
+	lw	$28,16($fp)
+	beq	$2,$0,$L21
+	nop
+
+	lw	$2,%got($LC21)($28)
+	addiu	$4,$2,%lo($LC21)
+	lw	$2,%call16(printf)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,printf
+1:	jalr	$25
+	nop
+
+	lw	$28,16($fp)
+$L21:
 	lw	$4,44($fp)
 	lw	$2,%call16(fclose)($28)
 	move	$25,$2
@@ -603,29 +654,26 @@ $L18:
 	nop
 
 	lw	$28,16($fp)
-	b	$L22
+	b	$L23
 	nop
 
 $L16:
-	lw	$2,%got(stderr)($28)
-	lw	$3,0($2)
-	lw	$6,36($fp)
-	lw	$2,%got($LC19)($28)
-	addiu	$5,$2,%lo($LC19)
-	move	$4,$3
-	lw	$2,%call16(fprintf)($28)
+	lw	$5,36($fp)
+	lw	$2,%got($LC22)($28)
+	addiu	$4,$2,%lo($LC22)
+	lw	$2,%call16(printf)($28)
 	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,fprintf
+	.reloc	1f,R_MIPS_JALR,printf
 1:	jalr	$25
 	nop
 
 	lw	$28,16($fp)
-	b	$L22
+	b	$L23
 	nop
 
 $L15:
-	lw	$2,%got($LC20)($28)
-	addiu	$4,$2,%lo($LC20)
+	lw	$2,%got($LC23)($28)
+	addiu	$4,$2,%lo($LC23)
 	lw	$2,%call16(puts)($28)
 	move	$25,$2
 	.reloc	1f,R_MIPS_JALR,puts
@@ -633,7 +681,7 @@ $L15:
 	nop
 
 	lw	$28,16($fp)
-$L22:
+$L23:
 	lw	$4,32($fp)
 	lw	$2,%call16(fclose)($28)
 	move	$25,$2
@@ -643,7 +691,7 @@ $L22:
 
 	lw	$28,16($fp)
 	lw	$2,68($fp)
-	beq	$2,$0,$L23
+	beq	$2,$0,$L24
 	nop
 
 	lw	$2,68($fp)
@@ -655,7 +703,7 @@ $L22:
 	nop
 
 	lw	$28,16($fp)
-$L23:
+$L24:
 	move	$4,$0
 	lw	$2,%call16(exit)($28)
 	move	$25,$2
@@ -671,12 +719,12 @@ $L6:
 	lw	$3,24($fp)
 	lw	$2,88($fp)
 	slt	$2,$3,$2
-	bne	$2,$0,$L24
+	bne	$2,$0,$L25
 	nop
 
 $L8:
 	move	$2,$0
-$L25:
+$L26:
 	move	$sp,$fp
 	lw	$31,84($sp)
 	lw	$fp,80($sp)
