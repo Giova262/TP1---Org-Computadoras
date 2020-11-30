@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "hash.h"
+#include "string_hash_more.h"
 
 typedef struct {
 	int32_t hash;
@@ -25,7 +25,7 @@ get_hash_(string_hash *sh, char *msg, size_t len, size_t stride)
 			delta = rem;
 	
 		// string_hash_more(sh, ptr, delta); // Hash de C
-		hashAs(sh, ptr, delta); // Hash de Assembly MIPS
+		string_hash_more(sh, ptr, delta); // Hash de Assembly MIPS
 		rem -= delta;
 		ptr += delta;
 	}
