@@ -35,12 +35,9 @@ static void string_hash_init(string_hash *h)
 
 int32_t processLine(char *line, string_hash* hash){
 	size_t len = strlen(line);
-/*	printf("%ld\n",len);*/
 	string_hash_init(hash);
 	string_hash_more(hash, line, len);
 	string_hash_done(hash);
-	// printf("0x%04x %s", hash.hash, line);
-	// printf("hash 1: 0x%04x\n", hash->hash);
 	return hash->hash;
 }
 
@@ -59,6 +56,7 @@ int main(int argc, char *argv[]) {
 
     string_hash hash;
     ssize_t read;
+	int invalido = 0;
    // size_t len = 0;
 
 	//parseo los argumentos para buscar input/output file route:
@@ -111,6 +109,9 @@ int main(int argc, char *argv[]) {
 			if ((strcmp("-i",argv[i]) == 0) && (i+1 <argc)){
 				inputFileRoute = argv[i+1];
 				//el input esta seteado
+				invalido = 1;
+			} else if ((strcmp("-i",argv[i]) == 0)) {
+				invalido = 2;
 			}
 	 	}
 	 	//busco el output
@@ -118,19 +119,38 @@ int main(int argc, char *argv[]) {
 			if ((strcmp("-o",argv[i]) == 0) && (i+1 <argc)){
 				outputFileRoute = argv[i+1];
 				//el output esta seteado
+				invalido = 1;
 			}
 	 	}
+
+        if (invalido == 0) {
+			fprintf(stderr,"No se reconoce el comando\n");
+			return -1;
+		}
+
+		if (invalido == 2) {
+			fprintf(stderr,"Falta definir la entrada.\n");
+			return -1;
+		}
  	}
     
  	//si el output esta seteado != default, abro para escribir
 	if (strcmp(defaultInput,outputFileRoute) != 0){
 		outputFile = fopen(outputFileRoute,"w");
+		if ( outputFile ==  NULL ) {
+            fprintf(stderr,"No pudo abrir el archivo\n");
+            return -1;
+        }
 	}
 
 	//inputSource es la fuente de donde lee. Si el input es default, es stdin. Si no, es el archivo.
 
  	if (strcmp(defaultInput,inputFileRoute) != 0){
  		inputSource = fopen(inputFileRoute, "r");
+		 if ( inputSource ==  NULL ) {
+            fprintf(stderr,"No pudo abrir el archivo\n");
+            return -1;
+		 }
  	}
 
 	//leo archivo o stdin
@@ -143,14 +163,14 @@ int main(int argc, char *argv[]) {
 
         if (strcmp(defaultInput,outputFileRoute) == 0) {
 			//proceso linea por linea
-			int32_t resultado = processLine(line,&hash);
+			processLine(line,&hash);
 		    printf("0x%04x %s", hash.hash, line);
         }
         else
         {
 			int32_t resultado = processLine(line,&hash);
             if (fprintf(outputFile,"0x%04x %s",resultado,line) < 0){
-                printf("Error al escribir en archivo de salida.");
+                fprintf(stderr,"Error al escribir en archivo de salida.");
             }
         }
     }
@@ -171,11 +191,13 @@ int main(int argc, char *argv[]) {
 	    fd = open(name, O_WRONLY | O_CREAT, 0644);
 	    if (fd == -1) {
 	        perror("open failed");
+			fprintf(stderr,"open failed");
 	        exit(1);
 	    }
 
 	    if (dup2(fd, 1) == -1) {
 	        perror("dup2 failed"); 
+			fprintf(stderr,"dup2 failed");
 	        exit(1);
 	    }
 
@@ -188,7 +210,7 @@ int main(int argc, char *argv[]) {
             len = strlen(line);
 
             //proceso linea por linea
-			int32_t resultado = processLine(line,&hash);
+			processLine(line,&hash);
 		    printf("0x%04x %s", hash.hash, line);
         }
 	    close(fd);

@@ -40,7 +40,7 @@ string_hash_more:
 		beq     t1, 1, no_error
 		beq     t1, 2, no_error
 		
-		li a0, 1
+		li a0, 2
 		la a1, mensaje
 		lw	a2, longitud
 		li v0, SYS_write 
