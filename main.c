@@ -174,6 +174,7 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+	if ( strcmp(strerror(errno),"Success") != 0 ) fprintf(stderr,"Error al leer la linea.\n");
 
 	//cierro los archivos
 	if (strcmp(defaultInput,inputFileRoute) != 0){
@@ -213,6 +214,7 @@ int main(int argc, char *argv[]) {
 			processLine(line,&hash);
 		    printf("0x%04x %s", hash.hash, line);
         }
+		if ( strcmp(strerror(errno),"Success") != 0 ) fprintf(stderr,"Error al leer la linea.\n");
 	    close(fd);
 	}
     return 0;
