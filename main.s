@@ -262,15 +262,9 @@ $LC19:
 	.ascii	"Error al escribir en archivo de salida.\000"
 	.align	2
 $LC20:
-	.ascii	"Success\000"
-	.align	2
-$LC21:
-	.ascii	"Error al leer la linea.\012\000"
-	.align	2
-$LC22:
 	.ascii	"open failed\000"
 	.align	2
-$LC23:
+$LC21:
 	.ascii	"dup2 failed\000"
 	.text
 	.align	2
@@ -344,7 +338,7 @@ $L12:
 
 	lw	$28,16($fp)
 	move	$2,$0
-	b	$L41
+	b	$L39
 	nop
 
 $L10:
@@ -392,7 +386,7 @@ $L15:
 
 	lw	$28,16($fp)
 	move	$2,$0
-	b	$L41
+	b	$L39
 	nop
 
 $L14:
@@ -464,7 +458,7 @@ $L18:
 
 	lw	$28,16($fp)
 	move	$2,$0
-	b	$L41
+	b	$L39
 	nop
 
 $L17:
@@ -623,7 +617,7 @@ $L23:
 
 	lw	$28,16($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	b	$L41
+	b	$L39
 	nop
 
 $L26:
@@ -647,7 +641,7 @@ $L26:
 
 	lw	$28,16($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	b	$L41
+	b	$L39
 	nop
 
 $L8:
@@ -693,7 +687,7 @@ $L8:
 
 	lw	$28,16($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	b	$L41
+	b	$L39
 	nop
 
 $L27:
@@ -739,7 +733,7 @@ $L27:
 
 	lw	$28,16($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	b	$L41
+	b	$L39
 	nop
 
 $L28:
@@ -860,26 +854,8 @@ $L29:
 	bne	$3,$2,$L31
 	nop
 
-	lw	$2,%call16(__errno_location)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,__errno_location
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	lw	$2,0($2)
-	move	$4,$2
-	lw	$2,%call16(strerror)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,strerror
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	move	$3,$2
-	lw	$2,%got($LC20)($28)
-	addiu	$5,$2,%lo($LC20)
-	move	$4,$3
+	lw	$5,28($fp)
+	lw	$4,48($fp)
 	lw	$2,%call16(strcmp)($28)
 	move	$25,$2
 	.reloc	1f,R_MIPS_JALR,strcmp
@@ -890,22 +866,16 @@ $L29:
 	beq	$2,$0,$L32
 	nop
 
-	lw	$2,%got(stderr)($28)
-	lw	$2,0($2)
-	move	$7,$2
-	li	$6,24			# 0x18
-	li	$5,1			# 0x1
-	lw	$2,%got($LC21)($28)
-	addiu	$4,$2,%lo($LC21)
-	lw	$2,%call16(fwrite)($28)
+	lw	$4,40($fp)
+	lw	$2,%call16(fclose)($28)
 	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,fwrite
+	.reloc	1f,R_MIPS_JALR,fclose
 1:	jalr	$25
 	nop
 
 	lw	$28,16($fp)
 $L32:
-	lw	$5,28($fp)
+	lw	$5,32($fp)
 	lw	$4,48($fp)
 	lw	$2,%call16(strcmp)($28)
 	move	$25,$2
@@ -917,7 +887,7 @@ $L32:
 	beq	$2,$0,$L33
 	nop
 
-	lw	$4,40($fp)
+	lw	$4,36($fp)
 	lw	$2,%call16(fclose)($28)
 	move	$25,$2
 	.reloc	1f,R_MIPS_JALR,fclose
@@ -938,27 +908,6 @@ $L33:
 	beq	$2,$0,$L34
 	nop
 
-	lw	$4,36($fp)
-	lw	$2,%call16(fclose)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,fclose
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-$L34:
-	lw	$5,32($fp)
-	lw	$4,48($fp)
-	lw	$2,%call16(strcmp)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,strcmp
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	beq	$2,$0,$L35
-	nop
-
 	lw	$2,32($fp)
 	sw	$2,68($fp)
 	li	$6,420			# 0x1a4
@@ -974,11 +923,11 @@ $L34:
 	sw	$2,72($fp)
 	lw	$3,72($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	bne	$3,$2,$L36
+	bne	$3,$2,$L35
 	nop
 
-	lw	$2,%got($LC22)($28)
-	addiu	$4,$2,%lo($LC22)
+	lw	$2,%got($LC20)($28)
+	addiu	$4,$2,%lo($LC20)
 	lw	$2,%call16(perror)($28)
 	move	$25,$2
 	.reloc	1f,R_MIPS_JALR,perror
@@ -991,8 +940,53 @@ $L34:
 	move	$7,$2
 	li	$6,11			# 0xb
 	li	$5,1			# 0x1
-	lw	$2,%got($LC22)($28)
-	addiu	$4,$2,%lo($LC22)
+	lw	$2,%got($LC20)($28)
+	addiu	$4,$2,%lo($LC20)
+	lw	$2,%call16(fwrite)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,fwrite
+1:	jalr	$25
+	nop
+
+	lw	$28,16($fp)
+	li	$4,1			# 0x1
+	lw	$2,%call16(exit)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,exit
+1:	jalr	$25
+	nop
+
+$L35:
+	li	$5,1			# 0x1
+	lw	$4,72($fp)
+	lw	$2,%call16(dup2)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,dup2
+1:	jalr	$25
+	nop
+
+	lw	$28,16($fp)
+	move	$3,$2
+	li	$2,-1			# 0xffffffffffffffff
+	bne	$3,$2,$L36
+	nop
+
+	lw	$2,%got($LC21)($28)
+	addiu	$4,$2,%lo($LC21)
+	lw	$2,%call16(perror)($28)
+	move	$25,$2
+	.reloc	1f,R_MIPS_JALR,perror
+1:	jalr	$25
+	nop
+
+	lw	$28,16($fp)
+	lw	$2,%got(stderr)($28)
+	lw	$2,0($2)
+	move	$7,$2
+	li	$6,11			# 0xb
+	li	$5,1			# 0x1
+	lw	$2,%got($LC21)($28)
+	addiu	$4,$2,%lo($LC21)
 	lw	$2,%call16(fwrite)($28)
 	move	$25,$2
 	.reloc	1f,R_MIPS_JALR,fwrite
@@ -1008,56 +1002,11 @@ $L34:
 	nop
 
 $L36:
-	li	$5,1			# 0x1
-	lw	$4,72($fp)
-	lw	$2,%call16(dup2)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,dup2
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	move	$3,$2
-	li	$2,-1			# 0xffffffffffffffff
-	bne	$3,$2,$L37
-	nop
-
-	lw	$2,%got($LC23)($28)
-	addiu	$4,$2,%lo($LC23)
-	lw	$2,%call16(perror)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,perror
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	lw	$2,%got(stderr)($28)
-	lw	$2,0($2)
-	move	$7,$2
-	li	$6,11			# 0xb
-	li	$5,1			# 0x1
-	lw	$2,%got($LC23)($28)
-	addiu	$4,$2,%lo($LC23)
-	lw	$2,%call16(fwrite)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,fwrite
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	li	$4,1			# 0x1
-	lw	$2,%call16(exit)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,exit
-1:	jalr	$25
-	nop
-
-$L37:
 	sw	$0,96($fp)
-	b	$L38
+	b	$L37
 	nop
 
-$L39:
+$L38:
 	lw	$2,96($fp)
 	move	$4,$2
 	lw	$2,%call16(strlen)($28)
@@ -1092,7 +1041,7 @@ $L39:
 	nop
 
 	lw	$28,16($fp)
-$L38:
+$L37:
 	addiu	$3,$fp,100
 	addiu	$2,$fp,96
 	lw	$6,40($fp)
@@ -1108,54 +1057,9 @@ $L38:
 	sw	$2,60($fp)
 	lw	$3,60($fp)
 	li	$2,-1			# 0xffffffffffffffff
-	bne	$3,$2,$L39
+	bne	$3,$2,$L38
 	nop
 
-	lw	$2,%call16(__errno_location)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,__errno_location
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	lw	$2,0($2)
-	move	$4,$2
-	lw	$2,%call16(strerror)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,strerror
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	move	$3,$2
-	lw	$2,%got($LC20)($28)
-	addiu	$5,$2,%lo($LC20)
-	move	$4,$3
-	lw	$2,%call16(strcmp)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,strcmp
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-	beq	$2,$0,$L40
-	nop
-
-	lw	$2,%got(stderr)($28)
-	lw	$2,0($2)
-	move	$7,$2
-	li	$6,24			# 0x18
-	li	$5,1			# 0x1
-	lw	$2,%got($LC21)($28)
-	addiu	$4,$2,%lo($LC21)
-	lw	$2,%call16(fwrite)($28)
-	move	$25,$2
-	.reloc	1f,R_MIPS_JALR,fwrite
-1:	jalr	$25
-	nop
-
-	lw	$28,16($fp)
-$L40:
 	lw	$4,72($fp)
 	lw	$2,%call16(close)($28)
 	move	$25,$2
@@ -1164,9 +1068,9 @@ $L40:
 	nop
 
 	lw	$28,16($fp)
-$L35:
+$L34:
 	move	$2,$0
-$L41:
+$L39:
 	move	$sp,$fp
 	lw	$31,108($sp)
 	lw	$fp,104($sp)
